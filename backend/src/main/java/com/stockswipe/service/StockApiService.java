@@ -17,6 +17,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -87,9 +89,16 @@ public class StockApiService {
     @Transactional
     public boolean updateStockData(Stock stock) {
         try {
+            // 어제 날짜 계산 (SYSDATE-1)
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            String basDt = yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            
             // URL을 직접 구성하여 인코딩 문제 방지
             String url = baseUrl + "/getStockPriceInfo?serviceKey=" + apiKey + 
-                        "&numOfRows=1&pageNo=1&likeSrtnCd=" + stock.getStockId();
+                        "&numOfRows=1&pageNo=1&likeSrtnCd=" + stock.getStockId() +
+                        "&basDt=" + basDt;
+            
+            log.debug("API 요청 URL ({}): basDt={}", stock.getStockId(), basDt);
             
             // URI 객체로 변환 (재인코딩 방지)
             URI uri = URI.create(url);
