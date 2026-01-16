@@ -2,14 +2,20 @@
 -- StockSwipe 초기 데이터 SQL
 -- =====================================================
 -- 
+-- 테이블 구조:
+--   1. categories: 카테고리 정보 (8개)
+--   2. stock_master: 종목 기본 정보 (160개)
+--   3. stock_prices: 날짜별 주가 정보 (INSERT or UPDATE)
+--
 -- 사용법:
---   psql -d stockswipe -f init-data.sql
+--   psql -d stockswipe -f backend/init-data.sql
 --
 -- 또는 PostgreSQL 클라이언트에서 직접 실행
 -- =====================================================
 
 -- 기존 데이터 삭제 (필요시)
--- DELETE FROM stocks;
+-- DELETE FROM stock_prices;
+-- DELETE FROM stock_master;
 -- DELETE FROM categories;
 
 -- =====================================================
@@ -28,11 +34,11 @@ INSERT INTO categories (code, name) VALUES
 ON CONFLICT (code) DO NOTHING;
 
 -- =====================================================
--- 2. STOCKS 테이블 - 160개 종목
+-- 2. STOCK_MASTER 테이블 - 160개 종목
 -- =====================================================
 
 -- 바이오 종목 (20개) - category_id = 1
-INSERT INTO stocks (stock_id, name, category_id) VALUES
+INSERT INTO stock_master (stock_id, name, category_id) VALUES
 ('068270', '셀트리온', (SELECT id FROM categories WHERE code = 'bio')),
 ('207940', '삼성바이오로직스', (SELECT id FROM categories WHERE code = 'bio')),
 ('091990', '셀트리온헬스케어', (SELECT id FROM categories WHERE code = 'bio')),
@@ -56,7 +62,7 @@ INSERT INTO stocks (stock_id, name, category_id) VALUES
 ON CONFLICT (stock_id) DO NOTHING;
 
 -- AI 종목 (20개) - category_id = 2
-INSERT INTO stocks (stock_id, name, category_id) VALUES
+INSERT INTO stock_master (stock_id, name, category_id) VALUES
 ('035420', '네이버', (SELECT id FROM categories WHERE code = 'ai')),
 ('035720', '카카오', (SELECT id FROM categories WHERE code = 'ai')),
 ('066570', 'LG전자', (SELECT id FROM categories WHERE code = 'ai')),
@@ -231,14 +237,14 @@ ON CONFLICT (stock_id) DO NOTHING;
 SELECT '카테고리 총 개수:', COUNT(*) FROM categories;
 
 -- 종목 수 확인 (160개여야 함)
-SELECT '종목 총 개수:', COUNT(*) FROM stocks;
+SELECT '종목 총 개수:', COUNT(*) FROM stock_master;
 
 -- 카테고리별 종목 수 확인 (각 20개씩)
 SELECT 
     c.name AS 카테고리,
     COUNT(s.id) AS 종목수
 FROM categories c
-LEFT JOIN stocks s ON c.id = s.category_id
+LEFT JOIN stock_master s ON c.id = s.category_id
 GROUP BY c.id, c.name
 ORDER BY c.id;
 

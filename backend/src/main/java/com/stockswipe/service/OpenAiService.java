@@ -1,7 +1,7 @@
 package com.stockswipe.service;
 
-import com.stockswipe.model.Stock;
-import com.stockswipe.repository.StockRepository;
+import com.stockswipe.model.StockMaster;
+import com.stockswipe.repository.StockMasterRepository;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -18,14 +18,14 @@ import java.util.List;
 @Service
 public class OpenAiService {
 
-    private final StockRepository stockRepository;
+    private final StockMasterRepository stockMasterRepository;
     private final com.theokanning.openai.service.OpenAiService openAiClient;
 
     @Value("${openai.api.key}")
     private String apiKey;
 
-    public OpenAiService(StockRepository stockRepository, @Value("${openai.api.key}") String apiKey) {
-        this.stockRepository = stockRepository;
+    public OpenAiService(StockMasterRepository stockMasterRepository, @Value("${openai.api.key}") String apiKey) {
+        this.stockMasterRepository = stockMasterRepository;
         if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("your-openai-api-key-here")) {
             this.openAiClient = new com.theokanning.openai.service.OpenAiService(apiKey, Duration.ofSeconds(60));
         } else {
@@ -44,40 +44,40 @@ public class OpenAiService {
             return;
         }
 
-        Stock stock = stockRepository.findByStockId(stockId)
-                .orElseThrow(() -> new RuntimeException("Stock not found: " + stockId));
+        StockMaster stockMaster = stockMasterRepository.findByStockId(stockId)
+                .orElseThrow(() -> new RuntimeException("StockMaster not found: " + stockId));
 
         try {
             // 1. 기업 개요 생성
             String descriptionPrompt = String.format(
                     "한국 주식 종목 '%s'에 대한 간단한 기업 개요를 2-3문장으로 작성해주세요. 객관적이고 간결하게 설명해주세요.",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String description = callOpenAI(descriptionPrompt);
-            stock.setDescription(description);
+            stockMaster.setDescription(description);
 
             // 2. 사업 내용 생성
             String businessPrompt = String.format(
                     "한국 주식 종목 '%s'의 주요 사업 내용을 1-2문장으로 작성해주세요.",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String business = callOpenAI(businessPrompt);
-            stock.setBusiness(business);
+            stockMaster.setBusiness(business);
 
             // 3. 키워드 5개 생성
             String keywordPrompt = String.format(
                     "한국 주식 종목 '%s'와 관련된 핵심 키워드 5개를 쉼표로 구분하여 나열해주세요. 예: AI, 검색, 플랫폼, 클라우드, 커머스",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String keywordsResponse = callOpenAI(keywordPrompt);
             List<String> keywords = parseKeywords(keywordsResponse);
-            stock.setKeywords(keywords);
+            stockMaster.setKeywords(keywords);
 
-            stockRepository.save(stock);
-            log.info("✅ {} OpenAI 정보 생성 완료", stock.getName());
+            stockMasterRepository.save(stockMaster);
+            log.info("✅ {} OpenAI 정보 생성 완료", stockMaster.getName());
 
         } catch (Exception e) {
-            log.error("❌ {} OpenAI 정보 생성 실패: {}", stock.getName(), e.getMessage());
+            log.error("❌ {} OpenAI 정보 생성 실패: {}", stockMaster.getName(), e.getMessage());
         }
     }
 
@@ -90,25 +90,25 @@ public class OpenAiService {
             return;
         }
 
-        List<Stock> stocks = stockRepository.findAll();
-        log.info("📊 총 {}개 종목의 AI 정보를 생성합니다...", stocks.size());
+        List<StockMaster> stockMasters = stockMasterRepository.findAll();
+        log.info("📊 총 {}개 종목의 AI 정보를 생성합니다...", stockMasters.size());
 
         int successCount = 0;
         int failCount = 0;
 
-        for (int i = 0; i < stocks.size(); i++) {
-            Stock stock = stocks.get(i);
+        for (int i = 0; i < stockMasters.size(); i++) {
+            StockMaster stockMaster = stockMasters.get(i);
             try {
-                generateStockInfo(stock.getStockId());
+                generateStockInfo(stockMaster.getStockId());
                 successCount++;
-                log.info("✅ [{}/{}] {} AI 정보 생성 완료", i + 1, stocks.size(), stock.getName());
+                log.info("✅ [{}/{}] {} AI 정보 생성 완료", i + 1, stockMasters.size(), stockMaster.getName());
 
                 // API 호출 제한 방지 (RPM 제한 고려)
                 Thread.sleep(1000); // 1초 대기
 
             } catch (Exception e) {
                 failCount++;
-                log.error("❌ [{}/{}] {} AI 정보 생성 실패: {}", i + 1, stocks.size(), stock.getName(), e.getMessage());
+                log.error("❌ [{}/{}] {} AI 정보 생성 실패: {}", i + 1, stockMasters.size(), stockMaster.getName(), e.getMessage());
             }
         }
 

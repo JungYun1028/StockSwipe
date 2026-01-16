@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@lombok.EqualsAndHashCode(exclude = "stock")
-@lombok.ToString(exclude = "stock")
+@lombok.EqualsAndHashCode(exclude = "stockMaster")
+@lombok.ToString(exclude = "stockMaster")
 public class News {
     
     @Id
@@ -26,9 +26,9 @@ public class News {
     private String summary;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_id")
+    @JoinColumn(name = "stock_master_id")
     @JsonIgnore
-    private Stock stock;
+    private StockMaster stockMaster;
     
     public News(String newsId, String title, String summary) {
         this.newsId = newsId;
