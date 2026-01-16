@@ -1,0 +1,357 @@
+.container {
+  min-height: 100vh;
+  background: #0E0F12;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(14, 15, 18, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.backButton {
+  padding: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.headerTitle {
+  flex: 1;
+}
+
+.headerTitle h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ticker {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.likeIndicator {
+  padding: 8px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.likeIndicator.liked {
+  color: #C64A3A;
+}
+
+.main {
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Price Section */
+.priceSection {
+  margin-bottom: 28px;
+}
+
+.currentPrice {
+  margin-bottom: 16px;
+}
+
+.price {
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.price.up {
+  color: #C64A3A;
+}
+
+.price.down {
+  color: #4A6FA5;
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+.change.up {
+  color: #C64A3A;
+}
+
+.change.down {
+  color: #4A6FA5;
+}
+
+.chartWrapper {
+  background: #1A1C22;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  margin-bottom: 16px;
+}
+
+/* Price Grid */
+.priceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.priceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.priceLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.priceValue {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card {
+  background: #1A1C22;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 16px 0;
+}
+
+.subTitle {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.businessText {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+/* Indicators */
+.indicatorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 16px;
+}
+
+.indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.indicatorLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.indicatorValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.indicatorValue span:first-child {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.indicatorHint {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.up {
+  color: #C64A3A !important;
+}
+
+.down {
+  color: #4A6FA5 !important;
+}
+
+/* Moving Averages */
+.maGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.maItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.maLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.maValue {
+  font-size: 0.85rem;
+}
+
+/* Rating */
+.ratingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ratingBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ratingBuy {
+  background: rgba(198, 74, 58, 0.15);
+  color: #C64A3A;
+}
+
+.ratingHold {
+  background: rgba(255, 200, 100, 0.15);
+  color: #E5B84A;
+}
+
+.ratingSell {
+  background: rgba(74, 111, 165, 0.15);
+  color: #4A6FA5;
+}
+
+.ratingReason {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+/* News */
+.newsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.newsCard {
+  background: #1A1C22;
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.newsCard:hover {
+  background: #22252D;
+  transform: translateY(-2px);
+}
+
+.newsTitle {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.newsSummary {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+}
+
+/* Keywords */
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}

@@ -1,0 +1,109 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: calc(100vh - 80px);
+}
+
+.swipeArea {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  touch-action: pan-y;
+}
+
+.cardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.swipeHints {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 380px;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.hint {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  opacity: 0.3;
+}
+
+.passHint {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.likeHint {
+  background: rgba(198, 74, 58, 0.1);
+  color: rgba(198, 74, 58, 0.5);
+}
+
+.hint.active {
+  opacity: 1;
+}
+
+.passHint.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.likeHint.active {
+  background: rgba(198, 74, 58, 0.2);
+  color: #C64A3A;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px;
+}
+
+.emptyContent {
+  text-align: center;
+  max-width: 300px;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.emptyContent h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+}
+
+.emptyContent p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

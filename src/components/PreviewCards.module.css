@@ -1,0 +1,81 @@
+.container {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 32px;
+  padding: 0 10px;
+}
+
+.title {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+  padding-left: 4px;
+}
+
+.cardsRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cardsRow::-webkit-scrollbar {
+  display: none;
+}
+
+.previewCard {
+  flex-shrink: 0;
+  width: 90px;
+  background: #1A1C22;
+  border-radius: 14px;
+  padding: 14px 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.previewCard:hover {
+  background: #22252D;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stockName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticker {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.change.up {
+  color: #C64A3A;
+}
+
+.change.down {
+  color: #4A6FA5;
+}

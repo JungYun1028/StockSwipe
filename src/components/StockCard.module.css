@@ -1,0 +1,229 @@
+.card {
+  background: #1A1C22;
+  border-radius: 22px;
+  padding: 24px;
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  user-select: none;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.stockInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stockName {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: -0.01em;
+}
+
+.ticker {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.priceChange {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.priceChange.up {
+  background: rgba(198, 74, 58, 0.15);
+  color: #C64A3A;
+}
+
+.priceChange.down {
+  background: rgba(74, 111, 165, 0.15);
+  color: #4A6FA5;
+}
+
+.chartContainer {
+  margin: 16px -8px;
+  cursor: pointer;
+}
+
+.priceSection {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.currentPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.priceLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.priceValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.priceValue.up {
+  color: #C64A3A;
+}
+
+.priceValue.down {
+  color: #4A6FA5;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.metric {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+}
+
+.metricValue {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.buyIcon {
+  color: #C64A3A;
+}
+
+.sellIcon {
+  color: #4A6FA5;
+}
+
+.buyText {
+  color: #C64A3A !important;
+}
+
+.sellText {
+  color: #4A6FA5 !important;
+}
+
+.newsSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 16px;
+}
+
+.newsTitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.newsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.newsItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 10px;
+  margin: 0 -10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+}
+
+.newsItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.newsDot {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.newsText {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.swipeIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 8px 24px;
+  border-radius: 12px;
+  border: 4px solid;
+  pointer-events: none;
+}
+
+.swipeIndicator.like {
+  color: #C64A3A;
+  border-color: #C64A3A;
+}
+
+.swipeIndicator.pass {
+  color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%) rotate(15deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

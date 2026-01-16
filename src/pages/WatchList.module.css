@@ -1,0 +1,281 @@
+.container {
+  min-height: 100vh;
+  background: #0E0F12;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(14, 15, 18, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.heartIcon {
+  color: #C64A3A;
+}
+
+.header h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.count {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.main {
+  padding: 20px;
+  padding-bottom: 120px;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.emptyState h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 12px;
+}
+
+.emptyState p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.goHomeButton {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #C64A3A 0%, #A33D30 100%);
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.goHomeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(198, 74, 58, 0.35);
+}
+
+/* Keywords Section */
+.keywordsSection {
+  margin-bottom: 28px;
+}
+
+.keywordsSection h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword {
+  padding: 8px 14px;
+  background: rgba(198, 74, 58, 0.1);
+  border: 1px solid rgba(198, 74, 58, 0.2);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: rgba(198, 74, 58, 0.9);
+}
+
+/* Category Section */
+.categorySection {
+  margin-bottom: 28px;
+}
+
+.categoryTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.stockList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stockItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #1A1C22;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stockInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.stockName {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticker {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stockTags {
+  display: flex;
+  gap: 6px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.priceInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.price {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.change.up {
+  color: #C64A3A;
+}
+
+.change.down {
+  color: #4A6FA5;
+}
+
+.chevron {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Stats Section */
+.statsSection {
+  margin-top: 32px;
+}
+
+.statsSection h3 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.statItem {
+  background: #1A1C22;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.statValue.up {
+  color: #C64A3A;
+}
+
+.statValue.down {
+  color: #4A6FA5;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
