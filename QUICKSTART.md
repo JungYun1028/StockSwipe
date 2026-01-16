@@ -144,7 +144,13 @@ cd stockswipe
 chmod +x start-backend.sh
 ./start-backend.sh
 
-# 3. 새 터미널에서 프론트엔드 실행
+# 3. **NEW!** 실제 주식 데이터 가져오기 (선택사항)
+chmod +x fetch-stock-data.sh
+./fetch-stock-data.sh
+# ⚠️ secret.json에 stock_api 키가 있어야 함
+# 없으면 기본 더미 데이터(160개)로 실행됩니다
+
+# 4. 새 터미널에서 프론트엔드 실행
 npm install
 npm run dev
 ```
@@ -263,12 +269,53 @@ pkill -f "spring-boot:run"
 # 프론트엔드: Ctrl+C
 ```
 
+## 📡 실제 주식 데이터 업데이트하기
+
+기본적으로 백엔드는 **더미 데이터 160개**를 자동으로 생성합니다.
+실제 주식 API 데이터를 사용하려면:
+
+### 1. API 키 설정
+
+`secret.json` 파일에 주식 API 키 추가:
+```json
+{
+  "stock_api": "YOUR_REAL_STOCK_API_KEY",
+  "openai_api_key": ""
+}
+```
+
+### 2. 데이터 업데이트 스크립트 실행
+
+```bash
+./fetch-stock-data.sh
+```
+
+이 스크립트는:
+- ✅ secret.json에서 API 키 자동 로드
+- ✅ 백엔드가 없으면 자동 시작
+- ✅ 160개 종목 실시간 데이터 업데이트 (약 3분 소요)
+- ✅ 진행 상황 실시간 표시
+- ✅ 결과 자동 확인
+
+### 3. 확인
+
+```bash
+curl http://localhost:8080/api/stocks | python3 -m json.tool | head -50
+```
+
+실제 종가, 등락률, 시가총액 등이 표시되면 성공!
+
+---
+
 ## 📞 도움이 필요하면
 
-1. **로그 확인**: `backend/logs/spring.log`
+1. **로그 확인**: 
+   - 백엔드: `logs/stock-update-backend.log`
+   - Spring Boot: `backend/logs/spring.log`
 2. **브라우저 콘솔 확인**: F12 → Console 탭
 3. **이슈 생성** 또는 팀원에게 문의
 
 ---
 
 **처음 실행하는 데 약 10-15분 소요됩니다** (Java, Maven, PostgreSQL 설치 포함)
+**주식 데이터 업데이트는 추가로 약 3분 소요됩니다**
