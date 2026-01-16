@@ -58,10 +58,10 @@
 
 ### 백엔드
 - **프레임워크**: Spring Boot 3.2.1
-- **언어**: Java 17
-- **빌드 도구**: Maven
+- **언어**: Java 21 ⚠️
+- **빌드 도구**: Maven 3.9+
 - **ORM**: Spring Data JPA
-- **데이터베이스**: H2 (개발), RDS (프로덕션)
+- **데이터베이스**: PostgreSQL 15 (개발), RDS (프로덕션)
 - **API**: RESTful API
 
 ## 🎨 디자인 시스템
@@ -80,26 +80,45 @@
 
 ## 🚀 실행 방법
 
-### 백엔드 실행 (먼저 실행)
+### ⚡ 빠른 시작 (처음 실행하는 팀원)
 
+**필수 요구사항:**
+- Java 21 (⚠️ 중요: 17이 아님!)
+- Maven 3.9+
+- PostgreSQL 15+
+- Node.js 18+
+
+**[QUICKSTART.md](./QUICKSTART.md) ← 여기를 먼저 보세요!**
+
+### 📦 간단 실행 (환경 설정 완료된 경우)
+
+macOS/Linux:
 ```bash
-cd backend
-mvn spring-boot:run
+# 백엔드 (자동 스크립트)
+./start-backend.sh
+
+# 프론트엔드 (새 터미널)
+npm install && npm run dev
 ```
 
-서버: http://localhost:8080
-
-### 프론트엔드 실행
-
+Windows:
 ```bash
-# 프로젝트 루트에서
+# 백엔드
+cd backend
+mvn spring-boot:run
+
+# 프론트엔드 (새 CMD)
 npm install
 npm run dev
 ```
 
-웹앱: http://localhost:5173
+**접속:**
+- 프론트엔드: http://localhost:5173 (또는 8000)
+- 백엔드 API: http://localhost:8080/api/stocks
 
-**상세 가이드는 [SETUP.md](./SETUP.md)를 참고하세요.**
+**상세 가이드:**
+- 처음 실행: [QUICKSTART.md](./QUICKSTART.md) ⭐
+- 전체 설정: [SETUP.md](./SETUP.md)
 
 ## 📁 프로젝트 구조
 
