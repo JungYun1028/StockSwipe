@@ -104,7 +104,13 @@ public class StockService {
         
         // News
         List<NewsDTO> newsDTOs = stockMaster.getNews().stream()
-                .map(n -> new NewsDTO(n.getNewsId(), n.getTitle(), n.getSummary()))
+                .map(n -> new NewsDTO(
+                        n.getNewsId(), 
+                        n.getTitle(), 
+                        n.getSummary(),
+                        n.getLink(),
+                        n.getSource()
+                ))
                 .collect(Collectors.toList());
         dto.setNews(newsDTOs);
         

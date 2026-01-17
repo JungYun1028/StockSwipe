@@ -2,6 +2,7 @@ package com.stockswipe.controller;
 
 import com.stockswipe.dto.CategoryDTO;
 import com.stockswipe.dto.StockDTO;
+import com.stockswipe.service.NaverNewsCrawler;
 import com.stockswipe.service.OpenAiService;
 import com.stockswipe.service.StockApiService;
 import com.stockswipe.service.StockService;
@@ -21,6 +22,7 @@ public class StockController {
     private final StockService stockService;
     private final StockApiService stockApiService;
     private final OpenAiService openAiService;
+    private final NaverNewsCrawler naverNewsCrawler;
     
     @GetMapping("/stocks")
     public ResponseEntity<List<StockDTO>> getAllStocks() {
@@ -82,6 +84,37 @@ public class StockController {
         response.put("status", "completed");
         response.put("stockId", stockId);
         response.put("message", "OpenAI 정보 생성이 완료되었습니다.");
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 특정 종목의 뉴스 크롤링
+     */
+    @PostMapping("/stocks/{stockId}/news")
+    public ResponseEntity<Map<String, Object>> crawlNewsForStock(
+            @PathVariable String stockId,
+            @RequestParam(defaultValue = "10") int count) {
+        int savedCount = naverNewsCrawler.crawlAndSaveNews(stockId, count);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "completed");
+        response.put("stockId", stockId);
+        response.put("savedCount", savedCount);
+        response.put("message", savedCount + "개의 뉴스가 저장되었습니다.");
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * 모든 종목의 뉴스 크롤링
+     */
+    @PostMapping("/stocks/news/crawl-all")
+    public ResponseEntity<Map<String, String>> crawlAllStocksNews(
+            @RequestParam(defaultValue = "10") int count) {
+        naverNewsCrawler.crawlAllStocksNews(count);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "completed");
+        response.put("message", "모든 종목의 뉴스 크롤링이 완료되었습니다.");
         return ResponseEntity.ok(response);
     }
 }
