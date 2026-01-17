@@ -22,6 +22,12 @@ export const stockAPI = {
     const response = await api.get(`/stocks/${stockId}`);
     return response.data;
   },
+  
+  // Alias for getStockById
+  getStock: async (stockId) => {
+    const response = await api.get(`/stocks/${stockId}`);
+    return response.data;
+  },
 
   // Get stocks by categories
   getStocksByCategories: async (categories) => {
@@ -32,6 +38,18 @@ export const stockAPI = {
   // Get all categories
   getCategories: async () => {
     const response = await api.get('/categories');
+    return response.data;
+  },
+  
+  // Crawl news for a specific stock
+  crawlStockNews: async (stockId, count = 5) => {
+    const response = await api.post(`/stocks/${stockId}/news?count=${count}`);
+    return response.data;
+  },
+  
+  // Crawl news for all stocks
+  crawlAllStocksNews: async (count = 5) => {
+    const response = await api.post(`/stocks/news/crawl-all?count=${count}`);
     return response.data;
   },
 };

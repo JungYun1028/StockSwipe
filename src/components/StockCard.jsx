@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Volume2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import MiniChart from './MiniChart';
 import styles from './StockCard.module.css';
+import { stockAPI } from '../services/api';
 
 const StockCard = ({
   stock,
@@ -10,6 +12,38 @@ const StockCard = ({
   onClick,
   onNewsClick,
 }) => {
+  const [newsLoading, setNewsLoading] = useState(false);
+  const [hasNews, setHasNews] = useState(stock.news && stock.news.length > 0);
+  
+  // 뉴스 자동 크롤링
+  useEffect(() => {
+    const fetchNews = async () => {
+      // 뉴스가 없고, 로딩 중이 아니고, 종목 ID가 있으면 크롤링
+      if (!hasNews && !newsLoading && stock.ticker) {
+        try {
+          setNewsLoading(true);
+          console.log(`뉴스 크롤링 시작: ${stock.name} (${stock.ticker})`);
+          
+          await stockAPI.crawlStockNews(stock.ticker, 5);
+          
+          // 뉴스 크롤링 후 다시 종목 정보 가져오기
+          const updatedStock = await stockAPI.getStock(stock.ticker);
+          if (updatedStock.news && updatedStock.news.length > 0) {
+            setHasNews(true);
+            // 부모 컴포넌트에 업데이트된 뉴스 전달 (선택사항)
+            stock.news = updatedStock.news;
+          }
+        } catch (error) {
+          console.error(`뉴스 크롤링 실패: ${stock.name}`, error);
+        } finally {
+          setNewsLoading(false);
+        }
+      }
+    };
+    
+    fetchNews();
+  }, [stock.ticker, hasNews, newsLoading]);
+  
   const priceChange = stock.currentPrice - stock.previousClose;
   const priceChangePercent = (priceChange / stock.previousClose) * 100;
   const isUp = priceChange >= 0;
@@ -116,7 +150,11 @@ const StockCard = ({
                 className={styles.newsItem}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNewsClick?.(news.id);
+                  if (news.link) {
+                    window.open(news.link, '_blank');
+                  } else {
+                    onNewsClick?.(news.id);
+                  }
                 }}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -128,7 +166,9 @@ const StockCard = ({
             <>
               <div className={styles.newsItem} style={{ opacity: 0.3 }}>
                 <span className={styles.newsDot}>•</span>
-                <span className={styles.newsText}>뉴스 준비 중...</span>
+                <span className={styles.newsText}>
+                  {newsLoading ? '뉴스 불러오는 중...' : '뉴스 준비 중...'}
+                </span>
               </div>
               <div className={styles.newsItem} style={{ opacity: 0.2 }}>
                 <span className={styles.newsDot}>•</span>
