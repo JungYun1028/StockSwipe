@@ -52,6 +52,15 @@ export const stockAPI = {
     const response = await api.post(`/stocks/news/crawl-all?count=${count}`);
     return response.data;
   },
+  
+  // Chat with AI
+  chat: async (message, stockContext = '') => {
+    const response = await api.post('/chat', {
+      message,
+      stockContext,
+    });
+    return response.data;
+  },
 };
 
 export default api;

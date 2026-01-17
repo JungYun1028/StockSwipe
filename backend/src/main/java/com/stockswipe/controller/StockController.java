@@ -117,5 +117,26 @@ public class StockController {
         response.put("message", "모든 종목의 뉴스 크롤링이 완료되었습니다.");
         return ResponseEntity.ok(response);
     }
+    
+    /**
+     * AI 챗봇 대화 엔드포인트
+     */
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String, String>> chat(@RequestBody Map<String, String> request) {
+        String userMessage = request.get("message");
+        String stockContext = request.getOrDefault("stockContext", "");
+        
+        if (userMessage == null || userMessage.trim().isEmpty()) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "메시지가 비어있습니다.");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        
+        String aiResponse = openAiService.chat(userMessage, stockContext);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("message", aiResponse);
+        return ResponseEntity.ok(response);
+    }
 }
 

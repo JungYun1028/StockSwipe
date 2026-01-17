@@ -158,5 +158,52 @@ public class OpenAiService {
         }
         return keywords;
     }
+
+    /**
+     * 챗봇 대화 - 사용자 질문에 대한 AI 답변 생성
+     */
+    public String chat(String userMessage, String stockContext) {
+        if (openAiClient == null) {
+            return "죄송합니다. OpenAI 서비스가 초기화되지 않았습니다. API 키를 확인해주세요.";
+        }
+
+        try {
+            List<ChatMessage> messages = new ArrayList<>();
+            
+            // 시스템 프롬프트 - 한국 주식 전문가 역할
+            String systemPrompt = "당신은 한국 주식 시장 전문가이자 친절한 투자 어시스턴트입니다. " +
+                    "사용자의 주식 투자 관련 질문에 명확하고 이해하기 쉽게 답변해주세요. " +
+                    "기술적 지표(RSI, 이동평균 등), 투자 전략, 시장 용어 등을 설명할 때는 초보자도 이해할 수 있도록 친절하게 설명해주세요. " +
+                    "투자 권유는 하지 말고, 정보와 분석만 제공하며, 최종 투자 결정은 개인의 책임임을 강조해주세요.";
+            
+            messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), systemPrompt));
+            
+            // 종목 컨텍스트가 있으면 추가
+            if (stockContext != null && !stockContext.isEmpty()) {
+                messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), 
+                        "현재 사용자가 보고 있는 종목 정보: " + stockContext));
+            }
+            
+            // 사용자 메시지
+            messages.add(new ChatMessage(ChatMessageRole.USER.value(), userMessage));
+
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("gpt-3.5-turbo")
+                    .messages(messages)
+                    .maxTokens(500)
+                    .temperature(0.7)
+                    .build();
+
+            var response = openAiClient.createChatCompletion(request);
+            String answer = response.getChoices().get(0).getMessage().getContent().trim();
+            
+            log.info("✅ 챗봇 응답 생성 완료");
+            return answer;
+
+        } catch (Exception e) {
+            log.error("❌ 챗봇 응답 생성 실패: {}", e.getMessage());
+            return "죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+        }
+    }
 }
 
