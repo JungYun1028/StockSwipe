@@ -14,14 +14,16 @@ const StockCard = ({
 }) => {
   const [newsLoading, setNewsLoading] = useState(false);
   const [hasNews, setHasNews] = useState(stock.news && stock.news.length > 0);
+  const [hasFetched, setHasFetched] = useState(false); // 크롤링 시도 여부
   
-  // 뉴스 자동 크롤링
+  // 뉴스 자동 크롤링 (한 번만 실행)
   useEffect(() => {
     const fetchNews = async () => {
-      // 뉴스가 없고, 로딩 중이 아니고, 종목 ID가 있으면 크롤링
-      if (!hasNews && !newsLoading && stock.ticker) {
+      // 한 번도 시도하지 않았고, 뉴스가 없고, 종목 ID가 있으면 크롤링
+      if (!hasFetched && !hasNews && stock.ticker) {
         try {
           setNewsLoading(true);
+          setHasFetched(true); // 시도 플래그 설정
           console.log(`뉴스 크롤링 시작: ${stock.name} (${stock.ticker})`);
           
           await stockAPI.crawlStockNews(stock.ticker, 5);
@@ -30,7 +32,7 @@ const StockCard = ({
           const updatedStock = await stockAPI.getStock(stock.ticker);
           if (updatedStock.news && updatedStock.news.length > 0) {
             setHasNews(true);
-            // 부모 컴포넌트에 업데이트된 뉴스 전달 (선택사항)
+            // 부모 컴포넌트에 업데이트된 뉴스 전달
             stock.news = updatedStock.news;
           }
         } catch (error) {
@@ -42,7 +44,7 @@ const StockCard = ({
     };
     
     fetchNews();
-  }, [stock.ticker, hasNews, newsLoading]);
+  }, [stock.ticker]); // 종목 ID만 의존성으로
   
   const priceChange = stock.currentPrice - stock.previousClose;
   const priceChangePercent = (priceChange / stock.previousClose) * 100;
