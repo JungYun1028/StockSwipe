@@ -33,9 +33,11 @@ echo "3️⃣  API 키 설정..."
 cd /Users/jejeong-yun/stockswipe
 
 if [ -f "secret.json" ]; then
-    export STOCK_API_KEY=$(grep -o '"stock_api": "[^"]*"' secret.json | cut -d '"' -f 4)
-    export OPENAI_API_KEY=$(grep -o '"openai_api_key": "[^"]*"' secret.json | cut -d '"' -f 4)
+    export STOCK_API_KEY=$(grep -o '"stock_api" : "[^"]*"' secret.json | cut -d '"' -f 4)
+    export OPENAI_API_KEY=$(grep -o '"openai_api_key" : "[^"]*"' secret.json | cut -d '"' -f 4)
     echo "✅ API 키 로드 완료"
+    echo "   - Stock API: ${STOCK_API_KEY:0:20}..."
+    echo "   - OpenAI API: ${OPENAI_API_KEY:0:20}..."
 else
     echo "⚠️  secret.json 파일을 찾을 수 없습니다"
 fi
