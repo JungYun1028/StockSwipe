@@ -49,6 +49,9 @@ export const AppProvider = ({ children }) => {
   const [chatContext, setChatContext] = useState(null);
   const [allStocks, setAllStocks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSeenSwipeTutorial, setHasSeenSwipeTutorial] = useState(() => {
+    return localStorage.getItem('hasSeenSwipeTutorial') === 'true';
+  });
   
   // Initialize weights based on selected categories
   const [categoryWeights, setCategoryWeights] = useState({});
@@ -210,6 +213,15 @@ export const AppProvider = ({ children }) => {
   const clearChat = useCallback(() => {
     setChatMessages([]);
   }, []);
+
+  const removeLikedStock = useCallback((stockId) => {
+    setLikedStocks(prev => prev.filter(stock => stock.id !== stockId));
+  }, []);
+
+  const completeSwipeTutorial = useCallback(() => {
+    setHasSeenSwipeTutorial(true);
+    localStorage.setItem('hasSeenSwipeTutorial', 'true');
+  }, []);
   
   return (
     <AppContext.Provider value={{
@@ -223,6 +235,7 @@ export const AppProvider = ({ children }) => {
       swipeHistory,
       handleSwipe,
       likedStocks,
+      removeLikedStock,
       chatMessages,
       addChatMessage,
       clearChat,
@@ -234,6 +247,8 @@ export const AppProvider = ({ children }) => {
       keywordWeights,
       isLoading,
       allStocks,
+      hasSeenSwipeTutorial,
+      completeSwipeTutorial,
     }}>
       {children}
     </AppContext.Provider>

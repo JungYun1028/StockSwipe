@@ -34,6 +34,24 @@ export const stockAPI = {
     const response = await api.get('/categories');
     return response.data;
   },
+
+  // Fetch news for a stock
+  fetchNewsForStock: async (stockId) => {
+    const response = await api.post(`/stocks/${stockId}/fetch-news`);
+    return response.data;
+  },
+
+  // Fetch news for all stocks
+  fetchAllNews: async () => {
+    const response = await api.post('/stocks/fetch-all-news');
+    return response.data;
+  },
+
+  // Analyze portfolio and get AI advice
+  analyzePortfolio: async (portfolioData) => {
+    const response = await api.post('/portfolio/analyze', portfolioData);
+    return response.data;
+  },
 };
 
 export default api;
