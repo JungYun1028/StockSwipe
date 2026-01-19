@@ -32,6 +32,20 @@ const StockDetail = () => {
         const backendData = await stockAPI.getStockById(id);
         const mappedStock = mapStockData(backendData);
         setStock(mappedStock);
+
+        // 뉴스가 없으면 자동으로 가져오기
+        if (!mappedStock.news || mappedStock.news.length === 0) {
+          console.log('📰 뉴스가 없어서 자동으로 가져옵니다...');
+          try {
+            await stockAPI.fetchNewsForStock(id);
+            // 뉴스 가져온 후 다시 종목 정보 로드
+            const updatedData = await stockAPI.getStockById(id);
+            const updatedStock = mapStockData(updatedData);
+            setStock(updatedStock);
+          } catch (newsError) {
+            console.error('뉴스 가져오기 실패:', newsError);
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch stock:', error);
       } finally {

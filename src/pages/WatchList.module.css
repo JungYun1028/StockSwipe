@@ -148,6 +148,19 @@
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.stockItem:hover {
+  background: #22252D;
+  border-color: rgba(198, 74, 58, 0.3);
+  transform: translateX(4px);
+}
+
+.stockItem:active {
+  transform: translateX(2px);
+  background: #1E2026;
 }
 
 .stockInfo {
@@ -218,8 +231,41 @@
   color: #4A6FA5;
 }
 
+.removeButton {
+  background: rgba(198, 74, 58, 0.1);
+  border: 1px solid rgba(198, 74, 58, 0.3);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(198, 74, 58, 0.8);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.removeButton:hover {
+  background: rgba(198, 74, 58, 0.2);
+  border-color: rgba(198, 74, 58, 0.5);
+  color: #C64A3A;
+  transform: scale(1.1);
+}
+
+.removeButton:active {
+  transform: scale(0.95);
+}
+
 .chevron {
   color: rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.stockItem:hover .chevron {
+  color: #C64A3A;
+  transform: translateX(4px);
 }
 
 /* Stats Section */
@@ -269,6 +315,380 @@
 .statLabel {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.45);
+}
+
+/* 포트폴리오 요약 섹션 */
+.portfolioSection {
+  margin-bottom: 28px;
+  padding: 20px;
+  background: #1A1C22;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.portfolioHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sectionIcon {
+  color: #C64A3A;
+}
+
+.portfolioHeader h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* AI 조언 섹션 */
+.aiAdviceSection {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(14, 15, 18, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(198, 74, 58, 0.2);
+}
+
+.aiAdviceHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.aiIcon {
+  color: #C64A3A;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.aiAdviceTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.aiAdviceLoading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.loader {
+  animation: spin 1s linear infinite;
+  color: #C64A3A;
+}
+
+.aiAdviceText {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: pre-wrap;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 요약 카드 */
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.summaryCard {
+  background: rgba(14, 15, 18, 0.6);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summaryCardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryCardLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summaryCardValue {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.summaryCardValue.up {
+  color: #C64A3A;
+}
+
+.summaryCardValue.down {
+  color: #4A6FA5;
+}
+
+.summaryCardSubtext {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+}
+
+/* 섹터 분포 */
+.sectorDistribution {
+  margin-bottom: 24px;
+}
+
+.sectionSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 14px;
+}
+
+.sectorList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectorItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectorInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.sectorName {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.sectorCount {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sectorBar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sectorBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.sectorPercentage {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* 최고/최저 수익 종목 */
+.bestWorstSection {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bestWorstCard {
+  background: rgba(14, 15, 18, 0.6);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bestWorstHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.bestWorstLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bestWorstStock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.bestWorstStock:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.bestWorstStockInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bestWorstStockName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.bestWorstStockTicker {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.bestWorstReturn {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.bestWorstReturn.up {
+  color: #C64A3A;
+}
+
+.bestWorstReturn.down {
+  color: #4A6FA5;
+}
+
+/* 상세 통계 */
+.detailedStats {
+  margin-bottom: 24px;
+}
+
+.detailedStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.detailedStatItem {
+  background: rgba(14, 15, 18, 0.6);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detailedStatValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.detailedStatValue.up {
+  color: #C64A3A;
+}
+
+.detailedStatValue.down {
+  color: #4A6FA5;
+}
+
+.detailedStatLabel {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 주요 키워드 */
+.topKeywordsSection {
+  margin-top: 20px;
+}
+
+.topKeywordsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topKeywordItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(14, 15, 18, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.topKeywordRank {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #C64A3A;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 24px;
+}
+
+.topKeywordName {
+  flex: 1;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.topKeywordCount {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'JetBrains Mono', monospace;
 }
 
 @keyframes pulse {
