@@ -270,4 +270,126 @@ public class OpenAiService {
             return "죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
         }
     }
+    
+    /**
+     * 뉴스 감성 기반 AI 전문가 분석 생성
+     * - 최신 뉴스 10개 분석
+     * - 5개 이상 호재 → 매수 추천
+     * - 3개 이상 악재 → 중립/관망 추천
+     */
+    @Transactional
+    public void generateAnalystRating(String stockId) {
+        StockMaster stockMaster = stockMasterRepository.findByStockId(stockId)
+                .orElseThrow(() -> new RuntimeException("StockMaster not found: " + stockId));
+        
+        // 최신 뉴스 10개 가져오기
+        List<com.stockswipe.model.News> recentNews = stockMaster.getNews().stream()
+                .sorted((n1, n2) -> Long.compare(n2.getId(), n1.getId())) // ID 기준 내림차순
+                .limit(10)
+                .toList();
+        
+        if (recentNews.isEmpty()) {
+            log.info("⚠️ {} 뉴스가 없어서 AI 분석을 생략합니다.", stockMaster.getName());
+            return;
+        }
+        
+        // 호재/악재 카운트
+        long positiveCount = recentNews.stream()
+                .filter(n -> "POSITIVE".equals(n.getSentiment()))
+                .count();
+        long negativeCount = recentNews.stream()
+                .filter(n -> "NEGATIVE".equals(n.getSentiment()))
+                .count();
+        
+        log.info("📊 {} 뉴스 감성 분석 - 호재: {}개, 악재: {}개 (총 {}개)", 
+                stockMaster.getName(), positiveCount, negativeCount, recentNews.size());
+        
+        // AI 전문가 의견 결정
+        String rating;
+        String reason;
+        
+        if (positiveCount >= 5) {
+            rating = "BUY";
+            reason = String.format("최근 %d개 뉴스 중 %d개가 호재로, 긍정적인 흐름이 강합니다. 적극 매수를 고려해볼 만합니다.", 
+                    recentNews.size(), positiveCount);
+        } else if (negativeCount >= 3) {
+            rating = "HOLD";
+            reason = String.format("최근 %d개 뉴스 중 %d개가 악재로, 부정적인 요소가 있습니다. 관망 또는 신중한 접근이 필요합니다.", 
+                    recentNews.size(), negativeCount);
+        } else {
+            rating = "HOLD";
+            reason = String.format("최근 %d개 뉴스의 감성이 혼재되어 있습니다. 추가 정보를 확인한 후 투자를 결정하시기 바랍니다.", 
+                    recentNews.size());
+        }
+        
+        stockMaster.setAnalystRating(rating);
+        stockMaster.setAnalystReason(reason);
+        stockMasterRepository.save(stockMaster);
+        
+        log.info("✅ {} AI 전문가 분석 완료 - {}: {}", stockMaster.getName(), rating, reason);
+    }
+    
+    /**
+     * 뉴스 감성 분석 (호재/악재 판단)
+     * @param stockName 종목명
+     * @param newsTitle 뉴스 제목
+     * @param newsSummary 뉴스 요약
+     * @return Map with "sentiment" (POSITIVE/NEGATIVE/NEUTRAL) and "score" (0.0~1.0)
+     */
+    public Map<String, Object> analyzeNewsSentiment(String stockName, String newsTitle, String newsSummary) {
+        if (openAiClient == null) {
+            log.warn("⚠️ OpenAI 클라이언트가 초기화되지 않았습니다. 기본값 NEUTRAL 반환");
+            return Map.of("sentiment", "NEUTRAL", "score", 0.5);
+        }
+        
+        try {
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("당신은 주식 뉴스 감성 분석 전문가입니다.\n\n");
+            prompt.append("종목명: ").append(stockName).append("\n");
+            prompt.append("뉴스 제목: ").append(newsTitle).append("\n");
+            if (newsSummary != null && !newsSummary.isEmpty()) {
+                prompt.append("뉴스 요약: ").append(newsSummary).append("\n");
+            }
+            prompt.append("\n");
+            prompt.append("위 뉴스가 해당 종목에 미치는 영향을 분석하여 다음 중 하나로 분류해주세요:\n");
+            prompt.append("- POSITIVE: 호재 (주가 상승에 긍정적)\n");
+            prompt.append("- NEGATIVE: 악재 (주가 하락에 부정적)\n");
+            prompt.append("- NEUTRAL: 중립 (영향 미미하거나 불명확)\n\n");
+            prompt.append("응답 형식: [감성]|[점수]\n");
+            prompt.append("예시: POSITIVE|0.85\n");
+            prompt.append("점수는 0.0(매우 부정) ~ 1.0(매우 긍정) 범위로 제공해주세요.");
+            
+            List<ChatMessage> messages = new ArrayList<>();
+            messages.add(new ChatMessage(ChatMessageRole.USER.value(), prompt.toString()));
+            
+            ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+                    .model("gpt-3.5-turbo")
+                    .messages(messages)
+                    .maxTokens(50)
+                    .temperature(0.3)
+                    .build();
+            
+            String response = openAiClient.createChatCompletion(completionRequest)
+                    .getChoices().get(0).getMessage().getContent().trim();
+            
+            log.info("📊 뉴스 감성 분석 결과: {}", response);
+            
+            // 응답 파싱: "POSITIVE|0.85" 형식
+            String[] parts = response.split("\\|");
+            String sentiment = parts.length > 0 ? parts[0].trim().toUpperCase() : "NEUTRAL";
+            double score = parts.length > 1 ? Double.parseDouble(parts[1].trim()) : 0.5;
+            
+            // sentiment 값 검증
+            if (!sentiment.equals("POSITIVE") && !sentiment.equals("NEGATIVE") && !sentiment.equals("NEUTRAL")) {
+                sentiment = "NEUTRAL";
+                score = 0.5;
+            }
+            
+            return Map.of("sentiment", sentiment, "score", score);
+            
+        } catch (Exception e) {
+            log.error("❌ 뉴스 감성 분석 실패: {}", e.getMessage());
+            return Map.of("sentiment", "NEUTRAL", "score", 0.5);
+        }
+    }
 }

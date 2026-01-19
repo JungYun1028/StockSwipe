@@ -297,7 +297,14 @@ const StockDetail = () => {
                     }}
                     style={{ cursor: news.link ? 'pointer' : 'default' }}
                   >
-                    <h4 className={styles.newsTitle}>{news.title}</h4>
+                    <div className={styles.newsTitleRow}>
+                      {news.sentiment && (
+                        <span className={`${styles.sentimentBadge} ${styles[news.sentiment.toLowerCase()]}`}>
+                          {news.sentiment === 'POSITIVE' ? '📈 호재' : news.sentiment === 'NEGATIVE' ? '📉 악재' : '━ 중립'}
+                        </span>
+                      )}
+                      <h4 className={styles.newsTitle}>{news.title}</h4>
+                    </div>
                     <p className={styles.newsSummary}>{news.summary}</p>
                     {news.source && (
                       <span className={styles.newsSource}>{news.source}</span>

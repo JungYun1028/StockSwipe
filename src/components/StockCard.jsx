@@ -161,7 +161,14 @@ const StockCard = ({
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <span className={styles.newsDot}>•</span>
-                <span className={styles.newsText}>{news.title}</span>
+                <span className={styles.newsText}>
+                  {news.sentiment && (
+                    <span className={`${styles.sentimentBadge} ${styles[news.sentiment.toLowerCase()]}`}>
+                      {news.sentiment === 'POSITIVE' ? '📈 호재' : news.sentiment === 'NEGATIVE' ? '📉 악재' : '━ 중립'}
+                    </span>
+                  )}
+                  {news.title}
+                </span>
               </div>
             ))
           ) : (

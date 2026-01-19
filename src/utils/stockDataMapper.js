@@ -51,6 +51,8 @@ export const mapStockData = (backendStock) => {
       summary: n.summary,
       link: n.link,      // 구글 뉴스 링크
       source: n.source,  // 뉴스 출처
+      sentiment: n.sentiment,  // 감성 분석: POSITIVE(호재), NEGATIVE(악재), NEUTRAL(중립)
+      sentimentScore: n.sentimentScore,  // 감성 점수 (0.0~1.0)
     })),
     
     // 키워드

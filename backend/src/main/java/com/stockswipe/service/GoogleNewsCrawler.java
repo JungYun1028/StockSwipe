@@ -38,6 +38,7 @@ public class GoogleNewsCrawler {
     
     private final StockMasterRepository stockMasterRepository;
     private final NewsRepository newsRepository;
+    private final OpenAiService openAiService;
     
     /**
      * 특정 종목의 뉴스를 크롤링하여 DB에 저장
@@ -65,20 +66,53 @@ public class GoogleNewsCrawler {
                     .anyMatch(n -> n.getLink() != null && n.getLink().equals(item.link));
             
             if (!exists) {
+                // OpenAI로 뉴스 감성 분석 (호재/악재 판단)
+                java.util.Map<String, Object> sentimentResult = openAiService.analyzeNewsSentiment(
+                        stockMaster.getName(), 
+                        item.title, 
+                        ""
+                );
+                String sentiment = (String) sentimentResult.get("sentiment");
+                Double sentimentScore = (Double) sentimentResult.get("score");
+                
+                log.info("📊 뉴스 감성 분석 - {}: {} ({})", 
+                        item.title.substring(0, Math.min(30, item.title.length())), 
+                        sentiment, 
+                        sentimentScore);
+                
                 News news = new News(
                         UUID.randomUUID().toString(), // newsId
                         item.title,
                         "", // summary는 나중에 추가 가능
                         item.link,
-                        item.source
+                        item.source,
+                        sentiment,
+                        sentimentScore
                 );
                 news.setStockMaster(stockMaster);
                 newsRepository.save(news);
                 savedCount++;
+                
+                // OpenAI API 호출 제한 방지 (초당 3건)
+                try {
+                    Thread.sleep(350);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         
         log.info("✅ {} 뉴스 크롤링 완료: {}개 저장", stockMaster.getName(), savedCount);
+        
+        // 뉴스 크롤링 완료 후 AI 전문가 분석 생성
+        if (savedCount > 0) {
+            try {
+                openAiService.generateAnalystRating(stockId);
+            } catch (Exception e) {
+                log.error("❌ {} AI 전문가 분석 생성 실패: {}", stockMaster.getName(), e.getMessage());
+            }
+        }
+        
         return savedCount;
     }
     

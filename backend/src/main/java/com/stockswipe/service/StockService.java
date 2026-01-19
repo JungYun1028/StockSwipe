@@ -109,7 +109,9 @@ public class StockService {
                         n.getTitle(), 
                         n.getSummary(),
                         n.getLink(),
-                        n.getSource()
+                        n.getSource(),
+                        n.getSentiment(),
+                        n.getSentimentScore()
                 ))
                 .collect(Collectors.toList());
         dto.setNews(newsDTOs);

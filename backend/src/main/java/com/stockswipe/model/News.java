@@ -31,6 +31,12 @@ public class News {
     @Column(length = 100)
     private String source;    // 뉴스 출처 (예: 연합뉴스, 조선일보)
     
+    @Column(length = 20)
+    private String sentiment;  // 감성 분석: POSITIVE(호재), NEGATIVE(악재), NEUTRAL(중립)
+    
+    @Column
+    private Double sentimentScore;  // 감성 점수 (0.0 ~ 1.0)
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_master_id")
     @JsonIgnore
@@ -48,6 +54,16 @@ public class News {
         this.summary = summary;
         this.link = link;
         this.source = source;
+    }
+    
+    public News(String newsId, String title, String summary, String link, String source, String sentiment, Double sentimentScore) {
+        this.newsId = newsId;
+        this.title = title;
+        this.summary = summary;
+        this.link = link;
+        this.source = source;
+        this.sentiment = sentiment;
+        this.sentimentScore = sentimentScore;
     }
 }
 
