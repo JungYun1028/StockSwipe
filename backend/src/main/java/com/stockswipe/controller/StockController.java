@@ -93,7 +93,7 @@ public class StockController {
     @PostMapping("/stocks/{stockId}/news")
     public ResponseEntity<Map<String, Object>> crawlNewsForStock(
             @PathVariable String stockId,
-            @RequestParam(defaultValue = "5") int count) {
+            @RequestParam(defaultValue = "10") int count) {
         int savedCount = googleNewsCrawler.crawlAndSaveNews(stockId, count);
         
         Map<String, Object> response = new HashMap<>();
@@ -109,7 +109,7 @@ public class StockController {
      */
     @PostMapping("/stocks/news/crawl-all")
     public ResponseEntity<Map<String, String>> crawlAllStocksNews(
-            @RequestParam(defaultValue = "5") int count) {
+            @RequestParam(defaultValue = "10") int count) {
         googleNewsCrawler.crawlAllStocksNews(count);
         
         Map<String, String> response = new HashMap<>();
