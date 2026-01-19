@@ -280,10 +280,18 @@ const StockDetail = () => {
                 <div 
                   key={news.id} 
                   className={styles.newsCard}
-                  onClick={() => navigate(`/news/${stock.id}/${news.id}`)}
+                  onClick={() => {
+                    if (news.link) {
+                      window.open(news.link, '_blank');
+                    }
+                  }}
+                  style={{ cursor: news.link ? 'pointer' : 'default' }}
                 >
                   <h4 className={styles.newsTitle}>{news.title}</h4>
                   <p className={styles.newsSummary}>{news.summary}</p>
+                  {news.source && (
+                    <span className={styles.newsSource}>{news.source}</span>
+                  )}
                 </div>
               ))
             ) : (

@@ -338,6 +338,14 @@
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.newsSource {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: rgba(198, 74, 58, 0.8);
+  margin-top: 4px;
 }
 
 /* Keywords */
