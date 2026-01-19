@@ -276,24 +276,38 @@ const StockDetail = () => {
           </h2>
           <div className={styles.newsList}>
             {stock.news && stock.news.length > 0 ? (
-              stock.news.map((news) => (
-                <div 
-                  key={news.id} 
-                  className={styles.newsCard}
-                  onClick={() => {
-                    if (news.link) {
-                      window.open(news.link, '_blank');
-                    }
-                  }}
-                  style={{ cursor: news.link ? 'pointer' : 'default' }}
-                >
-                  <h4 className={styles.newsTitle}>{news.title}</h4>
-                  <p className={styles.newsSummary}>{news.summary}</p>
-                  {news.source && (
-                    <span className={styles.newsSource}>{news.source}</span>
-                  )}
-                </div>
-              ))
+              stock.news.map((news) => {
+                console.log('📰 뉴스 데이터:', {
+                  title: news.title,
+                  link: news.link,
+                  hasLink: !!news.link
+                });
+                
+                return (
+                  <div 
+                    key={news.id} 
+                    className={styles.newsCard}
+                    onClick={() => {
+                      console.log('🖱️ 뉴스 클릭:', news.link);
+                      if (news.link) {
+                        window.open(news.link, '_blank');
+                      } else {
+                        console.error('❌ 뉴스 링크가 없습니다:', news);
+                      }
+                    }}
+                    style={{ cursor: news.link ? 'pointer' : 'default' }}
+                  >
+                    <h4 className={styles.newsTitle}>{news.title}</h4>
+                    <p className={styles.newsSummary}>{news.summary}</p>
+                    {news.source && (
+                      <span className={styles.newsSource}>{news.source}</span>
+                    )}
+                    {!news.link && (
+                      <span className={styles.newsError}>⚠️ 링크 없음</span>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <>
                 <div className={styles.newsCard}>

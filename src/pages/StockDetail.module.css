@@ -348,6 +348,16 @@
   margin-top: 4px;
 }
 
+.newsError {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: rgba(255, 200, 0, 0.8);
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: rgba(255, 200, 0, 0.1);
+  border-radius: 4px;
+}
+
 /* Keywords */
 .keywords {
   display: flex;
