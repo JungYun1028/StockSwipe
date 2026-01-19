@@ -43,6 +43,12 @@ public class StockMaster {
     @Column(length = 1000)
     private String business;        // 사업 내용
     
+    @Column(length = 10)
+    private String analystRating;   // AI 전문가 의견: BUY, HOLD, SELL
+    
+    @Column(length = 500)
+    private String analystReason;   // AI 전문가 의견 근거
+    
     // ===== 키워드 =====
     @ElementCollection
     @CollectionTable(name = "stock_keywords", joinColumns = @JoinColumn(name = "stock_id"))
