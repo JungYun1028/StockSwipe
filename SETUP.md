@@ -30,16 +30,42 @@ dist/
 ## 📋 필요 조건
 
 ### 백엔드
-- Java 17 이상
+- **Java 21** (중요: 21 필수!)
 - Maven 3.6 이상
+- PostgreSQL 15 이상
 
 ### 프론트엔드
 - Node.js 18 이상
 - npm 또는 yarn
 
+### API 키
+- `secret.json` 파일 (프로젝트 루트에 생성)
+- 임시 실행 시 빈 값으로 생성 가능
+
+**빠른 시작은 [QUICKSTART.md](./QUICKSTART.md)를 참고하세요!**
+
 ## 🚀 실행 방법
 
+### 빠른 시작 (자동 스크립트)
+
+macOS/Linux:
+```bash
+# 백엔드 실행 (PostgreSQL, 데이터베이스 자동 설정)
+./start-backend.sh
+
+# 새 터미널에서 프론트엔드 실행
+npm install
+npm run dev
+```
+
+Windows 또는 수동 실행은 아래 참조.
+
 ### 1. 백엔드 실행 (포트 8080)
+
+**전제 조건:**
+- PostgreSQL이 실행 중이어야 함
+- `stockswipe` 데이터베이스가 생성되어 있어야 함
+- `secret.json` 파일이 프로젝트 루트에 있어야 함
 
 ```bash
 cd backend
@@ -48,7 +74,8 @@ mvn spring-boot:run
 
 백엔드가 성공적으로 실행되면:
 - API 서버: http://localhost:8080
-- H2 Console: http://localhost:8080/h2-console
+- 종목 API: http://localhost:8080/api/stocks
+- 총 160개 종목 데이터 자동 생성 (카테고리별 20개씩)
 
 ### 2. 프론트엔드 실행 (포트 5173)
 
@@ -65,27 +92,46 @@ npm run dev
 
 ## 🔧 환경 설정
 
+### API 키 설정 (필수!)
+
+프로젝트 루트에 `secret.json` 파일 생성:
+
+```json
+{
+  "stock_api": "YOUR_STOCK_API_KEY_HERE",
+  "openai_api_key": "YOUR_OPENAI_API_KEY_HERE"
+}
+```
+
+**임시 테스트용 (빈 값):**
+```bash
+# macOS/Linux
+cat > secret.json << 'EOF'
+{
+  "stock_api": "",
+  "openai_api_key": ""
+}
+EOF
+```
+
 ### 백엔드 설정
 
 `backend/src/main/resources/application.properties`:
 
 ```properties
 server.port=8080
-spring.datasource.url=jdbc:h2:mem:stockswipe
+spring.datasource.url=jdbc:postgresql://localhost:5432/stockswipe
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+
+# OpenAI API 키 (secret.json에서 자동 로드)
+openai.api.key=${OPENAI_API_KEY:your-openai-api-key-here}
 ```
 
 ### 프론트엔드 설정
 
-`.env.example`을 복사하여 `.env` 파일 생성:
-
-```bash
-cp .env.example .env
-```
-
-`.env` 파일:
-```
-VITE_API_BASE_URL=http://localhost:8080/api
-```
+프론트엔드는 `vite.config.js`에서 백엔드 프록시가 자동 설정되어 있습니다.
+추가 설정 불필요!
 
 ## 📡 API 엔드포인트
 

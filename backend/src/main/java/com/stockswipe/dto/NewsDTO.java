@@ -11,5 +11,7 @@ public class NewsDTO {
     private String id;
     private String title;
     private String summary;
+    private String link;      // 뉴스 링크
+    private String source;    // 뉴스 출처
 }
 

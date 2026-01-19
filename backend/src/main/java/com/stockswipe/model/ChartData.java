@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@lombok.EqualsAndHashCode(exclude = "stock")
-@lombok.ToString(exclude = "stock")
+@lombok.EqualsAndHashCode(exclude = "stockMaster")
+@lombok.ToString(exclude = "stockMaster")
 public class ChartData {
     
     @Id
@@ -23,9 +23,9 @@ public class ChartData {
     private Double price;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_id")
+    @JoinColumn(name = "stock_master_id")
     @JsonIgnore
-    private Stock stock;
+    private StockMaster stockMaster;
     
     public ChartData(String time, Double price) {
         this.time = time;

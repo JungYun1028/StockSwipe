@@ -3,39 +3,43 @@ package com.stockswipe.service;
 import com.stockswipe.dto.*;
 import com.stockswipe.model.*;
 import com.stockswipe.repository.CategoryRepository;
-import com.stockswipe.repository.StockRepository;
+import com.stockswipe.repository.StockMasterRepository;
+import com.stockswipe.repository.StockPriceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StockService {
     
-    private final StockRepository stockRepository;
+    private final StockMasterRepository stockMasterRepository;
+    private final StockPriceRepository stockPriceRepository;
     private final CategoryRepository categoryRepository;
     
     @Transactional(readOnly = true)
     public List<StockDTO> getAllStocks() {
-        return stockRepository.findAllWithDetails().stream()
+        List<StockMaster> stockMasters = stockMasterRepository.findAll();
+        return stockMasters.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
     
     @Transactional(readOnly = true)
     public StockDTO getStockById(String stockId) {
-        Stock stock = stockRepository.findByStockIdWithDetails(stockId)
+        StockMaster stockMaster = stockMasterRepository.findByStockId(stockId)
                 .orElseThrow(() -> new RuntimeException("Stock not found: " + stockId));
-        return convertToDTO(stock);
+        return convertToDTO(stockMaster);
     }
     
     @Transactional(readOnly = true)
     public List<StockDTO> getStocksByCategory(String categoryCode) {
-        return stockRepository.findAllWithDetails().stream()
+        return stockMasterRepository.findAll().stream()
                 .filter(stock -> stock.getCategory() != null && 
                         stock.getCategory().getCode().equals(categoryCode))
                 .map(this::convertToDTO)
@@ -56,47 +60,57 @@ public class StockService {
         );
     }
     
-    private StockDTO convertToDTO(Stock stock) {
+    private StockDTO convertToDTO(StockMaster stockMaster) {
         StockDTO dto = new StockDTO();
-        dto.setId(stock.getStockId());
-        dto.setName(stock.getName());
+        dto.setId(stockMaster.getStockId());
+        dto.setName(stockMaster.getName());
         
         // Category
-        if (stock.getCategory() != null) {
-            dto.setCategory(convertCategoryToDTO(stock.getCategory()));
+        if (stockMaster.getCategory() != null) {
+            dto.setCategory(convertCategoryToDTO(stockMaster.getCategory()));
         }
         
-        // 공공 API 데이터
-        dto.setBasDt(stock.getBasDt());
-        dto.setIsinCd(stock.getIsinCd());
-        dto.setMrktCtg(stock.getMrktCtg());
-        dto.setClpr(stock.getClpr());
-        dto.setVs(stock.getVs());
-        dto.setFltRt(stock.getFltRt());
-        dto.setMkp(stock.getMkp());
-        dto.setHipr(stock.getHipr());
-        dto.setLopr(stock.getLopr());
-        dto.setTrqu(stock.getTrqu());
-        dto.setTrPrc(stock.getTrPrc());
-        dto.setLstgStCnt(stock.getLstgStCnt());
-        dto.setMrktTotAmt(stock.getMrktTotAmt());
+        // 최신 주가 정보 가져오기
+        Optional<StockPrice> latestPrice = stockPriceRepository.findLatestByStockMaster(stockMaster);
+        if (latestPrice.isPresent()) {
+            StockPrice price = latestPrice.get();
+            dto.setBasDt(price.getBasDt());
+            dto.setIsinCd(price.getIsinCd());
+            dto.setMrktCtg(price.getMrktCtg());
+            dto.setClpr(price.getClpr());
+            dto.setVs(price.getVs());
+            dto.setFltRt(price.getFltRt());
+            dto.setMkp(price.getMkp());
+            dto.setHipr(price.getHipr());
+            dto.setLopr(price.getLopr());
+            dto.setTrqu(price.getTrqu());
+            dto.setTrPrc(price.getTrPrc());
+            dto.setLstgStCnt(price.getLstgStCnt());
+            dto.setMrktTotAmt(price.getMrktTotAmt());
+        }
         
         // OpenAI 생성 데이터
-        dto.setDescription(stock.getDescription());
-        dto.setBusiness(stock.getBusiness());
+        dto.setDescription(stockMaster.getDescription());
+        dto.setBusiness(stockMaster.getBusiness());
         
         // 관계 데이터
-        dto.setKeywords(stock.getKeywords());
+        dto.setKeywords(stockMaster.getKeywords());
         
         // Chart Data
-        List<ChartDataDTO> chartDataDTOs = stock.getChartData().stream()
+        List<ChartDataDTO> chartDataDTOs = stockMaster.getChartData().stream()
                 .map(cd -> new ChartDataDTO(cd.getTime(), cd.getPrice()))
                 .collect(Collectors.toList());
         dto.setChartData(chartDataDTOs);
         
         // News
-        List<NewsDTO> newsDTOs = stock.getNews().stream()
-                .map(n -> new NewsDTO(n.getNewsId(), n.getTitle(), n.getSummary()))
+        List<NewsDTO> newsDTOs = stockMaster.getNews().stream()
+                .map(n -> new NewsDTO(
+                        n.getNewsId(), 
+                        n.getTitle(), 
+                        n.getSummary(),
+                        n.getLink(),
+                        n.getSource()
+                ))
                 .collect(Collectors.toList());
         dto.setNews(newsDTOs);
         

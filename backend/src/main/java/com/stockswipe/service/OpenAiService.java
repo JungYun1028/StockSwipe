@@ -1,7 +1,7 @@
 package com.stockswipe.service;
 
-import com.stockswipe.model.Stock;
-import com.stockswipe.repository.StockRepository;
+import com.stockswipe.model.StockMaster;
+import com.stockswipe.repository.StockMasterRepository;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -19,14 +19,14 @@ import java.util.Map;
 @Service
 public class OpenAiService {
 
-    private final StockRepository stockRepository;
+    private final StockMasterRepository stockMasterRepository;
     private final com.theokanning.openai.service.OpenAiService openAiClient;
 
     @Value("${openai.api.key}")
     private String apiKey;
 
-    public OpenAiService(StockRepository stockRepository, @Value("${openai.api.key}") String apiKey) {
-        this.stockRepository = stockRepository;
+    public OpenAiService(StockMasterRepository stockMasterRepository, @Value("${openai.api.key}") String apiKey) {
+        this.stockMasterRepository = stockMasterRepository;
         if (apiKey != null && !apiKey.isEmpty() && !apiKey.equals("your-openai-api-key-here")) {
             this.openAiClient = new com.theokanning.openai.service.OpenAiService(apiKey, Duration.ofSeconds(60));
         } else {
@@ -45,40 +45,40 @@ public class OpenAiService {
             return;
         }
 
-        Stock stock = stockRepository.findByStockId(stockId)
-                .orElseThrow(() -> new RuntimeException("Stock not found: " + stockId));
+        StockMaster stockMaster = stockMasterRepository.findByStockId(stockId)
+                .orElseThrow(() -> new RuntimeException("StockMaster not found: " + stockId));
 
         try {
             // 1. 기업 개요 생성
             String descriptionPrompt = String.format(
                     "한국 주식 종목 '%s'에 대한 간단한 기업 개요를 2-3문장으로 작성해주세요. 객관적이고 간결하게 설명해주세요.",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String description = callOpenAI(descriptionPrompt);
-            stock.setDescription(description);
+            stockMaster.setDescription(description);
 
             // 2. 사업 내용 생성
             String businessPrompt = String.format(
                     "한국 주식 종목 '%s'의 주요 사업 내용을 1-2문장으로 작성해주세요.",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String business = callOpenAI(businessPrompt);
-            stock.setBusiness(business);
+            stockMaster.setBusiness(business);
 
             // 3. 키워드 5개 생성
             String keywordPrompt = String.format(
                     "한국 주식 종목 '%s'와 관련된 핵심 키워드 5개를 쉼표로 구분하여 나열해주세요. 예: AI, 검색, 플랫폼, 클라우드, 커머스",
-                    stock.getName()
+                    stockMaster.getName()
             );
             String keywordsResponse = callOpenAI(keywordPrompt);
             List<String> keywords = parseKeywords(keywordsResponse);
-            stock.setKeywords(keywords);
+            stockMaster.setKeywords(keywords);
 
-            stockRepository.save(stock);
-            log.info("✅ {} OpenAI 정보 생성 완료", stock.getName());
+            stockMasterRepository.save(stockMaster);
+            log.info("✅ {} OpenAI 정보 생성 완료", stockMaster.getName());
 
         } catch (Exception e) {
-            log.error("❌ {} OpenAI 정보 생성 실패: {}", stock.getName(), e.getMessage());
+            log.error("❌ {} OpenAI 정보 생성 실패: {}", stockMaster.getName(), e.getMessage());
         }
     }
 
@@ -91,25 +91,25 @@ public class OpenAiService {
             return;
         }
 
-        List<Stock> stocks = stockRepository.findAll();
-        log.info("📊 총 {}개 종목의 AI 정보를 생성합니다...", stocks.size());
+        List<StockMaster> stockMasters = stockMasterRepository.findAll();
+        log.info("📊 총 {}개 종목의 AI 정보를 생성합니다...", stockMasters.size());
 
         int successCount = 0;
         int failCount = 0;
 
-        for (int i = 0; i < stocks.size(); i++) {
-            Stock stock = stocks.get(i);
+        for (int i = 0; i < stockMasters.size(); i++) {
+            StockMaster stockMaster = stockMasters.get(i);
             try {
-                generateStockInfo(stock.getStockId());
+                generateStockInfo(stockMaster.getStockId());
                 successCount++;
-                log.info("✅ [{}/{}] {} AI 정보 생성 완료", i + 1, stocks.size(), stock.getName());
+                log.info("✅ [{}/{}] {} AI 정보 생성 완료", i + 1, stockMasters.size(), stockMaster.getName());
 
                 // API 호출 제한 방지 (RPM 제한 고려)
                 Thread.sleep(1000); // 1초 대기
 
             } catch (Exception e) {
                 failCount++;
-                log.error("❌ [{}/{}] {} AI 정보 생성 실패: {}", i + 1, stocks.size(), stock.getName(), e.getMessage());
+                log.error("❌ [{}/{}] {} AI 정보 생성 실패: {}", i + 1, stockMasters.size(), stockMaster.getName(), e.getMessage());
             }
         }
 
@@ -166,14 +166,15 @@ public class OpenAiService {
     }
 
     /**
-     * 포트폴리오 분석 및 조언 생성
+    /**
+     * 포트폴리오 분석 및 조언 생성 (main 브랜치 기능)
      */
     public String analyzePortfolio(List<String> stockNames, List<String> categories, 
                                    double avgReturn, int upStocks, int downStocks, 
                                    Map<String, Integer> sectorDistribution) {
         if (openAiClient == null) {
             log.warn("OpenAI 클라이언트가 초기화되지 않았습니다. API 키를 확인해주세요.");
-            return "OpenAI API 키가 설정되지 않아 포트폴리오 분석을 수행할 수 없습니다. application.properties에서 openai.api.key를 설정해주세요.";
+            return "OpenAI API 키가 설정되지 않아 포트폴리오 분석을 수행할 수 없습니다.";
         }
 
         try {
@@ -222,5 +223,51 @@ public class OpenAiService {
             return "포트폴리오 분석 중 오류가 발생했습니다: " + e.getMessage();
         }
     }
-}
 
+    /**
+     * 챗봇 대화 - 사용자 질문에 대한 AI 답변 생성 (develop 브랜치 기능)
+     */
+    public String chat(String userMessage, String stockContext) {
+        if (openAiClient == null) {
+            return "죄송합니다. OpenAI 서비스가 초기화되지 않았습니다. API 키를 확인해주세요.";
+        }
+
+        try {
+            List<ChatMessage> messages = new ArrayList<>();
+            
+            // 시스템 프롬프트 - 한국 주식 전문가 역할
+            String systemPrompt = "당신은 한국 주식 시장 전문가이자 친절한 투자 어시스턴트입니다. " +
+                    "사용자의 주식 투자 관련 질문에 명확하고 이해하기 쉽게 답변해주세요. " +
+                    "기술적 지표(RSI, 이동평균 등), 투자 전략, 시장 용어 등을 설명할 때는 초보자도 이해할 수 있도록 친절하게 설명해주세요. " +
+                    "투자 권유는 하지 말고, 정보와 분석만 제공하며, 최종 투자 결정은 개인의 책임임을 강조해주세요.";
+            
+            messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), systemPrompt));
+            
+            // 종목 컨텍스트가 있으면 추가
+            if (stockContext != null && !stockContext.isEmpty()) {
+                messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), 
+                        "현재 사용자가 보고 있는 종목 정보: " + stockContext));
+            }
+            
+            // 사용자 메시지
+            messages.add(new ChatMessage(ChatMessageRole.USER.value(), userMessage));
+
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("gpt-3.5-turbo")
+                    .messages(messages)
+                    .maxTokens(500)
+                    .temperature(0.7)
+                    .build();
+
+            var response = openAiClient.createChatCompletion(request);
+            String answer = response.getChoices().get(0).getMessage().getContent().trim();
+            
+            log.info("✅ 챗봇 응답 생성 완료");
+            return answer;
+
+        } catch (Exception e) {
+            log.error("❌ 챗봇 응답 생성 실패: {}", e.getMessage());
+            return "죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+        }
+    }
+}

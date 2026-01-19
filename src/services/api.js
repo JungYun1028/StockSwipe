@@ -22,6 +22,12 @@ export const stockAPI = {
     const response = await api.get(`/stocks/${stockId}`);
     return response.data;
   },
+  
+  // Alias for getStockById
+  getStock: async (stockId) => {
+    const response = await api.get(`/stocks/${stockId}`);
+    return response.data;
+  },
 
   // Get stocks by categories
   getStocksByCategories: async (categories) => {
@@ -34,25 +40,45 @@ export const stockAPI = {
     const response = await api.get('/categories');
     return response.data;
   },
-
-  // Fetch news for a stock
+  
+  // Crawl news for a specific stock (develop)
+  crawlStockNews: async (stockId, count = 5) => {
+    const response = await api.post(`/stocks/${stockId}/news?count=${count}`);
+    return response.data;
+  },
+  
+  // Crawl news for all stocks (develop)
+  crawlAllStocksNews: async (count = 5) => {
+    const response = await api.post(`/stocks/news/crawl-all?count=${count}`);
+    return response.data;
+  },
+  
+  // Fetch news for a stock (main - legacy)
   fetchNewsForStock: async (stockId) => {
     const response = await api.post(`/stocks/${stockId}/fetch-news`);
     return response.data;
   },
 
-  // Fetch news for all stocks
+  // Fetch news for all stocks (main - legacy)
   fetchAllNews: async () => {
     const response = await api.post('/stocks/fetch-all-news');
     return response.data;
   },
 
-  // Analyze portfolio and get AI advice
+  // Analyze portfolio and get AI advice (main)
   analyzePortfolio: async (portfolioData) => {
     const response = await api.post('/portfolio/analyze', portfolioData);
+    return response.data;
+  },
+  
+  // Chat with AI (develop)
+  chat: async (message, stockContext = '') => {
+    const response = await api.post('/chat', {
+      message,
+      stockContext,
+    });
     return response.data;
   },
 };
 
 export default api;
-

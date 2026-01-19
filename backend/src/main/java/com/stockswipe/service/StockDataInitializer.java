@@ -2,7 +2,7 @@ package com.stockswipe.service;
 
 import com.stockswipe.model.*;
 import com.stockswipe.repository.CategoryRepository;
-import com.stockswipe.repository.StockRepository;
+import com.stockswipe.repository.StockMasterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.*;
 public class StockDataInitializer implements CommandLineRunner {
     
     private final CategoryRepository categoryRepository;
-    private final StockRepository stockRepository;
+    private final StockMasterRepository stockMasterRepository;
     
     @Override
     @Transactional
@@ -201,17 +201,17 @@ public class StockDataInitializer implements CommandLineRunner {
             String stockId = data[1];
             
             // 중복 체크: 이미 존재하는 종목은 건너뛰기
-            if (stockRepository.findByStockId(stockId).isPresent()) {
+            if (stockMasterRepository.findByStockId(stockId).isPresent()) {
                 skipped++;
                 continue;
             }
             
-            Stock stock = new Stock();
-            stock.setStockId(stockId);  // 종목코드
-            stock.setName(data[0]);     // 종목명
-            stock.setCategory(category);
+            StockMaster stockMaster = new StockMaster();
+            stockMaster.setStockId(stockId);  // 종목코드
+            stockMaster.setName(data[0]);     // 종목명
+            stockMaster.setCategory(category);
             
-            stockRepository.save(stock);
+            stockMasterRepository.save(stockMaster);
             created++;
         }
         

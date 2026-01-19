@@ -26,7 +26,7 @@ public class Category {
     private String name;  // 바이오, AI, 선박, 식품, 에너지, 반도체, 금융, 2차전지
     
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<Stock> stocks = new ArrayList<>();
+    private List<StockMaster> stockMasters = new ArrayList<>();
     
     public Category(String code, String name) {
         this.code = code;

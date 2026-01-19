@@ -103,6 +103,11 @@ export const AppProvider = ({ children }) => {
     });
     
     setCategoryWeights(initialCategoryWeights);
+    
+    // 카테고리 변경 시 스와이프 히스토리 초기화
+    setSwipeHistory([]);
+    setCurrentStockIndex(0);
+    
     setHasCompletedOnboarding(true);
   }, [selectedCategories]);
   

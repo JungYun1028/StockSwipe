@@ -2,7 +2,7 @@ package com.stockswipe.controller;
 
 import com.stockswipe.dto.CategoryDTO;
 import com.stockswipe.dto.StockDTO;
-import com.stockswipe.service.NewsService;
+import com.stockswipe.service.GoogleNewsCrawler;
 import com.stockswipe.service.OpenAiService;
 import com.stockswipe.service.StockApiService;
 import com.stockswipe.service.StockService;
@@ -22,7 +22,7 @@ public class StockController {
     private final StockService stockService;
     private final StockApiService stockApiService;
     private final OpenAiService openAiService;
-    private final NewsService newsService;
+    private final GoogleNewsCrawler googleNewsCrawler;
     
     @GetMapping("/stocks")
     public ResponseEntity<List<StockDTO>> getAllStocks() {
@@ -86,39 +86,40 @@ public class StockController {
         response.put("message", "OpenAI 정보 생성이 완료되었습니다.");
         return ResponseEntity.ok(response);
     }
-
+    
     /**
-     * 특정 종목의 뉴스 가져오기
+     * 특정 종목의 뉴스 크롤링 (구글 뉴스)
      */
-    @PostMapping("/stocks/{stockId}/fetch-news")
-    public ResponseEntity<Map<String, Object>> fetchNewsForStock(@PathVariable String stockId) {
-        int fetchedCount = newsService.fetchAndSaveNewsForStock(stockId);
+    @PostMapping("/stocks/{stockId}/news")
+    public ResponseEntity<Map<String, Object>> crawlNewsForStock(
+            @PathVariable String stockId,
+            @RequestParam(defaultValue = "10") int count) {
+        int savedCount = googleNewsCrawler.crawlAndSaveNews(stockId, count);
         
         Map<String, Object> response = new HashMap<>();
         response.put("status", "completed");
         response.put("stockId", stockId);
-        response.put("fetchedNewsCount", fetchedCount);
-        response.put("message", fetchedCount > 0 ? fetchedCount + "개의 뉴스를 가져왔습니다." : "새로운 뉴스가 없습니다.");
+        response.put("savedCount", savedCount);
+        response.put("message", savedCount + "개의 뉴스가 저장되었습니다.");
         return ResponseEntity.ok(response);
     }
-
+    
     /**
-     * 모든 종목의 뉴스 가져오기
+     * 모든 종목의 뉴스 크롤링 (구글 뉴스)
      */
-    @PostMapping("/stocks/fetch-all-news")
-    public ResponseEntity<Map<String, Object>> fetchAllNews() {
-        Map<String, Integer> result = newsService.fetchAndSaveAllNews();
+    @PostMapping("/stocks/news/crawl-all")
+    public ResponseEntity<Map<String, String>> crawlAllStocksNews(
+            @RequestParam(defaultValue = "10") int count) {
+        googleNewsCrawler.crawlAllStocksNews(count);
         
-        Map<String, Object> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         response.put("status", "completed");
-        response.put("totalStocksProcessed", result.get("totalStocksProcessed"));
-        response.put("totalNewsFetched", result.get("totalNewsFetched"));
-        response.put("message", "모든 종목의 뉴스 가져오기 작업이 완료되었습니다.");
+        response.put("message", "모든 종목의 뉴스 크롤링이 완료되었습니다.");
         return ResponseEntity.ok(response);
     }
-
+    
     /**
-     * 포트폴리오 분석 및 AI 조언
+     * 포트폴리오 분석 및 AI 조언 (main 브랜치에서 추가된 기능)
      */
     @PostMapping("/portfolio/analyze")
     public ResponseEntity<Map<String, Object>> analyzePortfolio(@RequestBody Map<String, Object> portfolioData) {
@@ -167,5 +168,25 @@ public class StockController {
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
+    
+    /**
+     * AI 챗봇 대화 엔드포인트
+     */
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String, String>> chat(@RequestBody Map<String, String> request) {
+        String userMessage = request.get("message");
+        String stockContext = request.getOrDefault("stockContext", "");
+        
+        if (userMessage == null || userMessage.trim().isEmpty()) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "메시지가 비어있습니다.");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        
+        String aiResponse = openAiService.chat(userMessage, stockContext);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("message", aiResponse);
+        return ResponseEntity.ok(response);
+    }
 }
-
