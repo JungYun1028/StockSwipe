@@ -98,6 +98,122 @@ const StockDetail = () => {
     if (volume >= 1000) return `${(volume / 1000).toFixed(0)}K`;
     return volume.toString();
   };
+
+  const getAverageVolume = (stockData) => {
+    const volumeSeries = (stockData?._raw?.chartData || [])
+      .map((item) => item?.volume)
+      .filter((value) => typeof value === 'number' && value > 0);
+    if (volumeSeries.length === 0) return null;
+    const recent = volumeSeries.slice(-20);
+    return recent.reduce((sum, value) => sum + value, 0) / recent.length;
+  };
+
+  const getNewsSentimentCounts = (newsList) => {
+    const recentNews = (newsList || []).slice(0, 10);
+    return recentNews.reduce(
+      (acc, news) => {
+        if (news.sentiment === 'POSITIVE') acc.positive += 1;
+        if (news.sentiment === 'NEGATIVE') acc.negative += 1;
+        return acc;
+      },
+      { positive: 0, negative: 0 }
+    );
+  };
+
+  const buildExpertAnalysis = (stockData) => {
+    const currentPrice = stockData.currentPrice || 0;
+    const high = stockData.high || 0;
+    const low = stockData.low || 0;
+    const volatilityPct = currentPrice > 0 ? ((high - low) / currentPrice) * 100 : 0;
+    const volatilityLevel = volatilityPct <= 3 ? '낮음' : volatilityPct <= 7 ? '보통' : '큼';
+
+    const avgVolume = getAverageVolume(stockData);
+    const volumeRatio = avgVolume ? stockData.volume / avgVolume : null;
+    const volumeLevel = volumeRatio === null
+      ? '데이터 없음'
+      : volumeRatio < 1
+        ? '관심 낮음'
+        : volumeRatio <= 1.5
+          ? '보통'
+          : '관심 급증';
+
+    const tradeValue = stockData.tradeValue || 0;
+    const tradeValueBillion = tradeValue ? tradeValue / 100000000 : 0;
+    const tradeValueLevel = tradeValueBillion >= 500
+      ? '안정적'
+      : tradeValueBillion >= 100
+        ? '보통'
+        : '유동성 낮음';
+
+    const changeRate = typeof stockData.changeRate === 'number'
+      ? stockData.changeRate
+      : priceChangePercent;
+    const absChangeRate = Math.abs(changeRate || 0);
+    const changeLevel = absChangeRate <= 2 ? '정상' : absChangeRate <= 5 ? '주의' : '위험';
+
+    const { positive, negative } = getNewsSentimentCounts(stockData.news);
+    const sentimentSampleSize = positive + negative;
+    const hasNewsSignal = sentimentSampleSize > 0;
+    const confidence = sentimentSampleSize >= 5 ? '보통' : '낮음';
+
+    let baseRating = '중립';
+    if (negative >= 3) {
+      baseRating = riskScore >= 2 ? '관망' : '중립';
+    } else if (positive >= 5) {
+      baseRating = '매수';
+    }
+    if (!hasNewsSignal) baseRating = '중립';
+
+    let riskScore = 0;
+    if (absChangeRate >= 5) riskScore += 2;
+    else if (absChangeRate >= 2) riskScore += 1;
+    if (volatilityPct >= 7) riskScore += 1;
+    if (volumeRatio !== null && volumeRatio >= 1.5) riskScore += 1;
+    if (tradeValueBillion > 0 && tradeValueBillion < 100) riskScore += 1;
+
+    let rating = baseRating;
+    if (rating === '매수' && riskScore >= 3) rating = '중립';
+    if (rating === '중립' && riskScore >= 3) rating = '관망';
+    if (confidence === '낮음' && rating === '매수') rating = '중립';
+    if (confidence === '낮음' && rating === '중립' && riskScore >= 2) rating = '관망';
+
+    const newsComment = hasNewsSignal
+      ? `기사에 따르면 최근 뉴스 중 호재 ${positive}건, 악재 ${negative}건이 확인됐으며, 이는 단기 심리가 ${negative >= 3 ? '경계' : positive >= 5 ? '우호' : '중립'} 쪽으로 이어질 수 있다는 신호로 해석했습니다.`
+      : '';
+    const indicatorDetails = [
+      `가격 변동 범위는 ${volatilityLevel} 수준`,
+      volumeRatio === null ? null : `거래량은 최근 평균 대비 ${volumeRatio.toFixed(1)}배로 ${volumeLevel} 수준`,
+      tradeValueBillion > 0 ? `거래대금은 약 ${tradeValueBillion.toFixed(0)}억으로 ${tradeValueLevel} 수준` : null,
+      `전일 대비 등락은 ${changeLevel} 구간`,
+    ].filter(Boolean);
+    const indicatorBase = indicatorDetails.length > 0
+      ? `지표를 보면 ${indicatorDetails.join(', ')}`
+      : '';
+
+    const indicatorComment = indicatorBase
+      ? `${indicatorBase}입니다.`
+      : '';
+
+    const conclusionComment = confidence === '낮음'
+      ? `${rating} 관점으로 보수적으로 판단했습니다.`
+      : `${rating} 관점으로 판단했으며 확신도는 ${confidence}입니다.`;
+
+    return {
+      rating,
+      comment: [newsComment, indicatorComment, conclusionComment]
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+    };
+  };
+
+  const expertAnalysis = buildExpertAnalysis(stock);
+  const ratingClass = expertAnalysis.rating === '매수'
+    ? styles.ratingBuy
+    : expertAnalysis.rating === '관망'
+      ? styles.ratingSell
+      : styles.ratingHold;
   
   return (
     <div className={styles.container}>
@@ -255,10 +371,10 @@ const StockDetail = () => {
           </h2>
           <div className={styles.card}>
             <div className={styles.ratingSection}>
-              <div className={`${styles.ratingBadge} ${styles.ratingHold}`}>
-                중립
+              <div className={`${styles.ratingBadge} ${ratingClass}`}>
+                {expertAnalysis.rating}
               </div>
-              <p className={styles.ratingReason}>AI 의견</p>
+              <p className={styles.ratingReason}>{expertAnalysis.comment}</p>
             </div>
           </div>
         </motion.section>
@@ -298,11 +414,6 @@ const StockDetail = () => {
                     style={{ cursor: news.link ? 'pointer' : 'default' }}
                   >
                     <div className={styles.newsTitleRow}>
-                      {news.sentiment && (
-                        <span className={`${styles.sentimentBadge} ${styles[news.sentiment.toLowerCase()]}`}>
-                          {news.sentiment === 'POSITIVE' ? '📈 호재' : news.sentiment === 'NEGATIVE' ? '📉 악재' : '━ 중립'}
-                        </span>
-                      )}
                       <h4 className={styles.newsTitle}>{news.title}</h4>
                     </div>
                     <p className={styles.newsSummary}>{news.summary}</p>

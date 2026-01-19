@@ -36,10 +36,14 @@ export const mapStockData = (backendStock) => {
     volume: backendStock.trqu || 0,
     buyVolume: buy,
     sellVolume: sell,
+    tradeValue: backendStock.trPrc || 0,
     
     // 시장 정보
     marketType: backendStock.mrktCtg,
     marketCap: backendStock.mrktTotAmt,
+
+    // 등락률 (전일 대비, %)
+    changeRate: typeof backendStock.fltRt === 'number' ? backendStock.fltRt : null,
     
     // 차트 데이터
     chartData: backendStock.chartData || [],
