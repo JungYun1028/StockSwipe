@@ -46,9 +46,11 @@ export const mapStockData = (backendStock) => {
     
     // 뉴스
     news: (backendStock.news || []).map(n => ({
-      id: n.newsId,
+      id: n.id || n.newsId,
       title: n.title,
       summary: n.summary,
+      link: n.link,      // 구글 뉴스 링크
+      source: n.source,  // 뉴스 출처
     })),
     
     // 키워드
