@@ -117,6 +117,9 @@ const WatchList = () => {
 
   // AI 포트폴리오 분석
   useEffect(() => {
+    // 이미 로딩 중이면 중복 호출 방지
+    if (isLoadingAdvice) return;
+    
     const fetchAiAdvice = async () => {
       if (!portfolioSummary || likedStocks.length === 0) {
         setAiAdvice(null);
@@ -167,7 +170,7 @@ const WatchList = () => {
     };
 
     fetchAiAdvice();
-  }, [likedStocks.length, portfolioSummary?.avgReturn, portfolioSummary?.sectorDistribution]);
+  }, [likedStocks.length]); // 종목 개수가 변경될 때만 호출
 
   const handleRemoveStock = (e, stockId) => {
     e.stopPropagation(); // 부모 클릭 이벤트 방지
